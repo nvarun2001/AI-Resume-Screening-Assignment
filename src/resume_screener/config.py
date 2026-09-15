@@ -15,6 +15,13 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+# --- LLM request tuning ---
+# Temperature 0 keeps extraction/scoring as reproducible as the model allows,
+# which matters for a screening tool that must be explainable and re-runnable.
+LLM_MAX_TOKENS = 4096
+LLM_TEMPERATURE = 0.0
+
+
 # --- Scoring weights (must sum to 100) ---
 AI_PROJECT_DEPTH_MAX = 40
 PYTHON_BACKEND_MAX = 30
