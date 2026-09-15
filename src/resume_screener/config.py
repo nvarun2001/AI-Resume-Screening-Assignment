@@ -88,6 +88,20 @@ AI_KEYWORDS = [
     "bedrock",
 ]
 
+# Terms that count as genuine Python evidence for the eligibility gate. A
+# Python-specific framework (Django/Flask/FastAPI/...) implies Python even if
+# the word "python" is absent. Deliberately excludes the loose "py" token.
+PYTHON_EVIDENCE_TERMS = [
+    "python",
+    "django",
+    "flask",
+    "fastapi",
+    "pytorch",
+    "tensorflow",
+    "pandas",
+    "numpy",
+]
+
 BACKEND_KEYWORDS = [
     "fastapi",
     "django",
