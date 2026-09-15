@@ -10,10 +10,11 @@ result is flagged ``llm_failed`` so downstream stages know the data is partial.
 from __future__ import annotations
 
 import logging
+from typing import Optional
 
 from . import config
 from .llm_adapter import LLMClient, LLMError
-from .models import Project, ResumeExtraction, ResumeFields
+from .models import ResumeExtraction, ResumeFields
 from .parsing import ParsedResume
 
 logger = logging.getLogger(__name__)
@@ -27,21 +28,29 @@ EXTRACTION_SYSTEM_PROMPT = (
 )
 
 
-def extract_candidate(parsed: ParsedResume, client: LLMClient) -> ResumeExtraction:
-    """Produce a merged ``ResumeExtraction`` from parsed text + the LLM."""
+def extract_candidate(parsed: ParsedResume, client: Optional[LLMClient] = None) -> ResumeExtraction:
+    """Produce a merged ``ResumeExtraction`` from parsed text + the LLM.
+
+    When ``client`` is ``None`` the LLM step is skipped entirely and a
+    keyword-based heuristic is used, so the pipeline can run without an LLM.
+    """
 
     text = parsed.text[: config.MAX_RESUME_CHARS]
-    status = "ok"
-    try:
-        fields = client.extract_structured(
-            EXTRACTION_SYSTEM_PROMPT,
-            f"Resume text:\n\n{text}",
-            ResumeFields,
-        )
-    except LLMError as exc:
-        logger.warning("LLM extraction failed for %s: %s", parsed.source_file, exc)
+    if client is None:
         fields = _heuristic_fields(parsed.text)
-        status = "llm_failed"
+        status = "no_llm"
+    else:
+        try:
+            fields = client.extract_structured(
+                EXTRACTION_SYSTEM_PROMPT,
+                f"Resume text:\n\n{text}",
+                ResumeFields,
+            )
+            status = "ok"
+        except LLMError as exc:
+            logger.warning("LLM extraction failed for %s: %s", parsed.source_file, exc)
+            fields = _heuristic_fields(parsed.text)
+            status = "llm_failed"
 
     name = fields.name or _guess_name(parsed.text)
     return ResumeExtraction(
