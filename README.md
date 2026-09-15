@@ -83,15 +83,6 @@ ranked `results.json` from keyword-based heuristics (no network/LLM calls):
 python main.py --input ./resumes --output ./output/results.json --no-llm
 ```
 
-The result is written to `output/results.json`. To version it alongside the
-code:
-
-```bash
-git add output/results.json
-git commit -m "chore: add generated results.json for resume set"
-git push origin main
-```
-
 ## Output
 
 A single JSON object with a batch summary and the ranked candidate list:
