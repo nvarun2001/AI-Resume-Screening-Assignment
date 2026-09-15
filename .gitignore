@@ -12,9 +12,10 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 
-# Local artifacts
-.cache/
-build.log
+# Local scratch / command output
+.scratch/
+*.log
+cleanup_status.txt
 
 # Assignment doc
 *.docx
