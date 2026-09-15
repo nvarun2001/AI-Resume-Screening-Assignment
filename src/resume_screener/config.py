@@ -15,6 +15,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
+# Upper bound on resume text sent to the model, to keep token usage predictable.
+MAX_RESUME_CHARS = 15000
+
+
 # --- LLM request tuning ---
 # Temperature 0 keeps extraction/scoring as reproducible as the model allows,
 # which matters for a screening tool that must be explainable and re-runnable.
