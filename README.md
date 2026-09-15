@@ -66,6 +66,32 @@ Options:
   offline run or when no key is available).
 - `-v` / `--verbose` — enable info-level logging.
 
+## Generating `results.json`
+
+Run the pipeline against the resume folder and write the ranked output. With a
+valid `LLM_API_KEY` in `.env`, this uses the LLM for extraction and AI-depth
+scoring:
+
+```bash
+python main.py --input ./resumes --output ./output/results.json
+```
+
+No API key or credits? Use the deterministic mode — it produces a complete,
+ranked `results.json` from keyword-based heuristics (no network/LLM calls):
+
+```bash
+python main.py --input ./resumes --output ./output/results.json --no-llm
+```
+
+The result is written to `output/results.json`. To version it alongside the
+code:
+
+```bash
+git add output/results.json
+git commit -m "chore: add generated results.json for resume set"
+git push origin main
+```
+
 ## Output
 
 A single JSON object with a batch summary and the ranked candidate list:
