@@ -1,0 +1,20 @@
+# Environment / secrets
+.env
+
+# Real resumes (PII) - keep the folder, ignore contents
+resumes/*
+!resumes/.gitkeep
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# Local artifacts
+.cache/
+build.log
+
+# Assignment doc
+*.docx
