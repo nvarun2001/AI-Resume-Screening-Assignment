@@ -51,7 +51,13 @@ def _project_work_corpus(extraction: ResumeExtraction) -> str:
     for exp in extraction.work_experience:
         parts.extend([exp.role, exp.description])
         parts.extend(exp.technologies)
-    return "\n".join(p for p in parts if p).lower()
+    corpus = "\n".join(p for p in parts if p).lower()
+    # Without structured projects (e.g. deterministic mode or a failed LLM
+    # extraction) fall back to the raw text so evidence isn't lost and the
+    # candidate isn't wrongly treated as "skills-list only".
+    if not corpus:
+        return extraction.raw_text.lower()
+    return corpus
 
 
 def _full_corpus(extraction: ResumeExtraction) -> str:
@@ -208,9 +214,10 @@ def assemble_score(
 
 
 def _project_summary(extraction: ResumeExtraction) -> str:
-    if not extraction.projects:
-        return ""
-    project = extraction.projects[0]
-    detail = project.description or ", ".join(project.technologies)
-    summary = f"{project.name}: {detail}".strip().strip(":").strip()
-    return summary
+    if extraction.projects:
+        project = extraction.projects[0]
+        detail = project.description or ", ".join(project.technologies)
+        return f"{project.name}: {detail}".strip().strip(":").strip()
+    # Fallback for deterministic mode: a short snippet of the raw text.
+    collapsed = " ".join(extraction.raw_text.split())
+    return collapsed[:200]
