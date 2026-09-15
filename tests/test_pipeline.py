@@ -74,3 +74,22 @@ def test_pipeline_empty_directory(tmp_path):
     result = Pipeline(llm_client=None, enricher=_enricher()).run(tmp_path)
     assert result.summary.total_resumes == 0
     assert result.candidates == []
+
+
+def test_pipeline_survives_failing_llm(tmp_path):
+    # An LLM that errors on every call (e.g. billing/auth failure) must not
+    # crash the batch; the pipeline should degrade to heuristics and complete.
+    from resume_screener.llm_adapter import LLMClient
+
+    def failing_transport(system, user, schema):
+        raise RuntimeError("credit balance too low")
+
+    _make_resumes(tmp_path)
+    pipeline = Pipeline(llm_client=LLMClient(transport=failing_transport), enricher=_enricher())
+    result = pipeline.run(tmp_path)
+
+    assert result.summary.total_resumes == 3
+    assert result.summary.eligible == 1  # still screened via heuristics
+    top = result.candidates[0]
+    assert top.eligible is True
+    assert top.total_score and top.total_score > 0

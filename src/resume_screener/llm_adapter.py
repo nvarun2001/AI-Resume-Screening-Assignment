@@ -18,7 +18,7 @@ import json
 import logging
 from typing import Callable, Optional, TypeVar
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 from . import config
 from .config import Settings
@@ -54,7 +54,7 @@ class LLMClient:
             try:
                 raw = self._invoke(system_prompt, user_prompt, schema_json)
                 return schema.model_validate(raw)
-            except (LLMError, ValidationError, ValueError, KeyError) as exc:
+            except Exception as exc:  # noqa: BLE001 - any provider error must degrade, not crash the batch
                 last_error = exc
                 logger.warning("LLM call attempt %d failed: %s", attempt + 1, exc)
         raise LLMError(f"LLM extraction failed after retries: {last_error}") from last_error
