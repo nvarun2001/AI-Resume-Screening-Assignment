@@ -205,6 +205,25 @@ DEPTH_SIGNAL_KEYWORDS = [
 ]
 
 
+# --- Category scoring tuning ---
+# Number of distinct matched keywords at which a category earns full marks.
+CATEGORY_SATURATION = {
+    "python_backend": 4,
+    "cloud_fullstack": 3,
+    "engineering_depth": 3,
+}
+# Multiplier applied when evidence appears only in a skills list (not backed by
+# a project or work-experience description). Rewards demonstrated use over
+# keyword stuffing.
+KEYWORD_ONLY_FACTOR = 0.6
+
+# AI project-depth deterministic fallback (used when no LLM is available).
+AI_DEPTH_SATURATION = 8  # weighted signal count for full 40 points
+AI_DEPTH_SIGNAL_WEIGHT = 2  # each real depth signal (retrieval, state, tools...)
+AI_KEYWORD_WEIGHT = 1  # each AI/framework keyword
+AI_WRAPPER_PENALTY = 10  # deduction for a shallow API-wrapper "project"
+
+
 # --- GitHub enrichment scoring ---
 GITHUB_API_BASE = "https://api.github.com"
 GITHUB_ACTIVITY_LOOKBACK_DAYS = 90

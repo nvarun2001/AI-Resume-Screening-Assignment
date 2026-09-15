@@ -9,9 +9,8 @@ only decide relevance.
 
 from __future__ import annotations
 
-import re
-
 from . import config
+from .matching import contains
 from .models import EligibilityResult, ResumeExtraction
 
 # Full vocabulary of technologies we recognise, used to filter the candidate's
@@ -28,16 +27,9 @@ _KNOWN_TECH = {
 }
 
 
-def _contains(corpus: str, term: str) -> bool:
-    """Word-ish boundary match so 'rag' does not match 'storage'."""
-
-    pattern = rf"(?<![a-z0-9]){re.escape(term.lower())}(?![a-z0-9])"
-    return re.search(pattern, corpus) is not None
-
-
 def _first_match(corpus: str, terms: list[str]) -> str | None:
     for term in terms:
-        if _contains(corpus, term):
+        if contains(corpus, term):
             return term
     return None
 

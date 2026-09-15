@@ -64,6 +64,22 @@ class ResumeExtraction(BaseModel):
     extraction_status: str = "ok"  # ok | llm_failed
 
 
+class AIDepthAssessment(BaseModel):
+    """Structured judgment of AI/agentic project depth from the LLM.
+
+    ``base_points`` is the merit before penalties; ``penalty`` captures the
+    deduction for shallow wrapper/tutorial work. Keeping them separate makes the
+    final score auditable.
+    """
+
+    base_points: int = 0
+    penalty: int = 0
+    is_wrapper: bool = False
+    evidence: str = ""
+    strengths: list[str] = Field(default_factory=list)
+    concerns: list[str] = Field(default_factory=list)
+
+
 class EligibilityResult(BaseModel):
     eligible: bool
     rejection_reasons: list[str] = Field(default_factory=list)
